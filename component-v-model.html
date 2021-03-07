@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    {{title}}
+    <cpn v-bind:valuedddd="title"
+    v-on:input="title = $event"></cpn>
+  </div>
+
+  <template id="cpn">
+    <div>
+      <input type="text" v-bind:value="valuedddd" v-on:input="$emit('input', $event.target.value)">
+    </div>
+  </template>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js'></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        title: 'vue'
+      },
+      components: {
+        cpn: {
+          props: {
+            valuedddd: String
+          },
+          template: '#cpn'
+        }
+      }
+    })
+  </script>
+</body>
+</html>

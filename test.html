@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  <div id="app">
+    {{$store.state.count}}
+    {{list}}</br>
+    <button @click="clickHandaler">xxx</button>
+    HI
+    <h2>{{message}}</h2>
+    <ttt />
+  </div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vuex/3.6.0/vuex.js'></script> 
+  <script>
+    const store = new Vuex.Store({
+      state: {
+        count: 0
+      },
+      actions: {
+        INCREMENT(context) {
+          return new Promise((resolve, reject) => {
+            // resolve('OK!')
+            reject(Error('test error!'))
+          })
+        }
+      }
+    })
+    const app = new Vue({
+      el: "#app",
+      // template: "<div>ggg</div>",
+      data:{
+        message:"123",
+        list : [{num: 1}]
+      },
+      store,
+      // computed: {
+      //   ttt() {
+      //     return "ggg"
+      //   }
+      // },
+      // computed: Vuex.mapState({
+      //   storeCount: (state) => state.count
+      //   // storeCount: 'count'
+      // }),
+      computed: {
+        ttt() {
+          return "ggg"
+        },
+        ...Vuex.mapState({
+          storeCount: (state) => state.count
+          // storeCount: 'count'
+        }),
+      },
+      components: {
+        ttt: {
+          template: `<div class="ddd"><div>111</div><h3>子組件</h3></div>`
+        }
+      },
+      methods: {
+        clickHandaler() {
+          // setTimeout(() => {
+          //   Vue.set(this.list, 0, {name: "kevin", age: 18})
+          // }, 2000)
+          const a  = ++this.list[0].num
+          console.log(a)
+        }
+      }
+    })
+  </script>
+</body>
+</html>

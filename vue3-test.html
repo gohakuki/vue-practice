@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://unpkg.com/vue@next"></script>  
+</head>
+<body>
+  <div id="app">
+  </div>
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          massage: '你好！'
+        }
+      },
+      template: `
+        <div>123</div>
+        <test :msg="massage"></test>
+      `
+    })
+    app.component('test', {
+      props: {
+        msg: String
+      },
+      template: '<h1>{{ msg }}</h1>'
+    })
+    app.mount("#app")
+  </script>
+</body>
+</html>

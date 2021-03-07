@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <input type="text" v-model.trim="inputText" @keyup.enter="addHandler">
+    <p>
+      <button @click="show = 'all'">全部</button>
+      <button @click="show = 'done'">完成</button>
+      <button @click="show = 'doing'">未完成</button>
+    </p>
+    <ul>
+      <li v-for="(item, index) in filterTextList">
+        <template v-if="item === modify">
+          <input type="text" v-model="modifyText">
+          <button @click="completeHandler(item)">完成</button>
+          <button @click="cancelHandler">取消</button>
+        </template>
+        <template v-else>
+          <input type="checkbox" v-model="item.check">
+          <span>{{ item.text }}</span>
+          <button @click="modifyHandler(item)">修改</button>
+          <button @click="deleteHandler(item)">刪除</button>
+        </template>
+        
+      </li>
+
+
+    </ul>
+    
+
+  </div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.js'></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data: {
+        massage: 'Hello Vue!',
+        inputText: '',
+        textList: [],
+        show: 'all',
+        modify: null,
+        modifyText: ''
+      },
+      computed: {
+        filterTextList() {
+          if(this.show === 'all') {
+            return this.textList
+          } 
+          else if(this.show === 'done') {
+            return this.textList.filter(item => item.check === true)
+          } 
+          else if(this.show === 'doing') {
+            return this.textList.filter(item => item.check === false)
+          } else {
+            return []
+          }
+        }
+      },
+      methods: {
+        addHandler() {
+          if(!this.inputText) {
+            return
+          }
+          this.textList.push({
+            text: this.inputText,
+            check: false
+          })
+          this.inputText = ''
+        },
+        deleteHandler(item) {
+          console.log(item)
+          this.textList = this.textList.filter(val => val !== item)
+        },
+        modifyHandler(item) {
+          this.modify = item
+          this.modifyText = item.text
+        },
+        completeHandler(item) {
+          item.text = this.modifyText
+          this.cancelHandler()
+        },
+        cancelHandler() {
+          this.modify = null
+        }
+      }
+    })
+  </script>
+</body>
+</html>

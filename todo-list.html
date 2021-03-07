@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js'></script>
+    <div id="app">
+        <p>
+            <input type="text" v-model="inputText" @keyup.enter="createText">
+        </p>  
+        <button @click="show = 'all'">全部</button>
+        <button @click="show = 'done'">完成</button>
+        <button @click="show = 'doing'">未完成</button>
+        <ul>
+            <li v-for="item in filterList" :key="item.timestamp">
+                <template v-if="editing === item">
+                    <input type="text" v-model="editInput">
+                    <button @click="complete(item)">完成</button>
+                    <button @click="cancel">取消</button>
+                </template>
+                <template v-else>
+                    <input type="checkbox" v-model="item.status">
+                    {{ item.content }}
+                    <button @click="updateText(item)">修改</button>
+                    <button @click="removeText(item)">刪除</button>
+                    
+                </template>
+                
+            </li>
+        </ul>
+    </div>
+    <script>
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    inputText: "",
+                    textList: [],
+                    editInput: "",
+                    editing: null,
+                    show: "all"
+                }
+            },
+            computed: {
+                filterList() {
+                    if(this.show === "all") {
+                        return this.textList
+                    } else if(this.show === "done") {
+                        return this.textList.filter((item) => {
+                            return item.status === true
+                        })
+                    } else if(this.show === "doing") {
+                        return this.textList.filter((item) => {
+                            return item.status === false
+                        })
+                    } else {
+                        return []
+                    }
+                }
+            },
+            methods: {
+                createText() {
+                    this.textList.push({
+                        timestamp: new Date().getTime(),
+                        content: this.inputText,
+                        status: false
+                        })
+                    this.inputText = ""
+                },
+                updateText(item) {
+                    this.editing = item
+                    this.editInput = item.content
+                },
+                complete(item) {
+                    item.content = this.editInput
+                    this.cancel()
+                },
+                cancel() {
+                    this.editInput = ""
+                    this.editing = null
+                },
+                removeText(item) {
+                    this.textList = this.textList.filter((val) => {
+                        console.log(val)
+                        return val !== item
+                    })          
+                }
+            }
+        })
+    </script>
+</body>
+</html>

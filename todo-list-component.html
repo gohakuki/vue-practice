@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js'></script>
+    <div id="app">
+        <input-component @create-text="createText"></input-component>
+        <filter-component @change-show="changeShow"></filter-component>
+        <ul>
+            <item-list-component v-for="item of filterList" :item="item" :key="item.timestamp" :editing="editing" @complete="complete" @remove-text="removeText" @change-status="changeStatus" @update="updateText" @cancel="cancel"></item-list-component>
+        </ul>
+    </div>
+    <script>
+        Vue.component("filter-component", {
+            data() {
+                return {
+                    buttonList: [
+                        { text: "全部", value: "all" },
+                        { text: "完成", value: "done" },
+                        { text: "未完成", value: "doing" }
+                    ]
+                }
+            },
+            template: `
+                <P>
+                    <button v-for="item of buttonList" :key="item.text" @click="$emit('change-show', item.value)">{{ item.text }}</button>
+                </p>
+            `
+        })
+        Vue.component("input-component", {
+            data() {
+                return {
+                    inputText: ""
+                }
+            },
+            template: `
+            <p>
+                <input type="text" v-model="inputText" @keyup.enter="createText">
+            </p>
+            `,
+            methods: {
+                createText() {
+                    this.$emit('create-text', this.inputText)
+                    this.inputText = ""
+                }
+            }
+        })
+        Vue.component("item-list-component", {
+            props: ['item', 'editing'],
+            data() {
+                return {
+                    editInput: ""
+                }
+            },
+            template: `
+                <li>
+                    <template v-if="editing === item">
+                        <input type="text" v-model="editInput">
+                        <button @click="complete(item)">完成</button>
+                        <button @click="cancel">取消</button>
+                    </template>
+                    <template v-else>
+                        <input type="checkbox" v-model="status">
+                        {{ item.content }}
+                        <button @click="updateText(item)">修改</button>
+                        <button @click="removeText(item)">刪除</button>
+                    </template>
+                </li>
+            `,
+            computed: {
+                status: {
+                    get() {
+                        return this.item.status
+                    },
+                    set(value) {
+                        this.$emit('change-status', this.item, value)
+                    }
+                }
+            },
+            methods: {
+                updateText(item) {
+                    this.$emit('update', item)
+                    this.editInput = item.content
+                },
+                complete(item) {
+                    this.$emit('complete', this.editInput)
+                    this.cancel()
+                },
+                cancel() {
+                    this.$emit('cancel')
+                    this.editInput = ""
+                },
+                removeText(item) {
+                    this.$emit('remove-text', item)
+                }
+            }
+        })
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    inputText: "",
+                    textList: [],
+                    editing: null,
+                    show: "all"
+                }
+            },
+            computed: {
+                filterList() {
+                    if (this.show === "all") {
+                        return this.textList
+                    } else if (this.show === "done") {
+                        return this.textList.filter((item) => {
+                            return item.status === true
+                        })
+                    } else if (this.show === "doing") {
+                        return this.textList.filter((item) => {
+                            return item.status === false
+                        })
+                    } else {
+                        return []
+                    }
+                }
+            },
+            methods: {
+                createText(value) {
+                    this.textList.push({
+                        timestamp: new Date().getTime(),
+                        content: value,
+                        status: false
+                    })
+                },
+                updateText(item) {  
+                    this.editing = item
+                },
+                complete(value) {
+                    this.editing.content = value
+                },
+                cancel() {
+                    console.log(333)
+                    this.editing = null
+                },
+                removeText(item) {
+                    this.textList = this.textList.filter((val) => {
+                        console.log(val)
+                        return val !== item
+                    })
+                },
+                changeShow(value) {
+                    this.show = value
+                },
+                changeStatus(item, value) {
+                    item.status = value
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
